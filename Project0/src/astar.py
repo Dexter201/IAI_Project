@@ -1,6 +1,8 @@
 from pacman_module.game import Agent, Directions
 from pacman_module.util import PriorityQueueWithFunction
 from pacman_module.util import manhattanDistance
+import numpy as np
+
 
 def key(state):
     """Returns a key that uniquely identifies a Pacman game state.
@@ -16,7 +18,7 @@ def key(state):
         state.getPacmanPosition(),
         state.getFood(),
         state.getNumFood(),
-        tuple(state.getCapsules())
+        tuple(state.getCapsules()),
     )
 
 
@@ -60,15 +62,17 @@ class PacmanAgent(Agent):
         """
 
         path = []
-        fringe = PriorityQueueWithFunction(self.estimatedCostOfCheapestSolution)
-        fringe.push((state, path))
+        fringe = PriorityQueueWithFunction(
+            self.estimatedCostOfCheapestSolution
+        )
+        fringe.push((None, state, path, 0))
         closed = set()
 
         while True:
             if fringe.isEmpty():
                 return []
 
-            priority, (current, path) = fringe.pop()
+            priority, (past, current, path, cost) = fringe.pop()
 
             if current.isWin():
                 return path
@@ -81,7 +85,14 @@ class PacmanAgent(Agent):
                 closed.add(current_key)
 
             for successor, action in current.generatePacmanSuccessors():
-                fringe.push((successor, path + [action]))
+                fringe.push(
+                    (
+                        current,
+                        successor,
+                        path + [action],
+                        self.pastCost(current, successor, cost, action),
+                    )
+                )
 
         return path
 
@@ -91,30 +102,70 @@ class PacmanAgent(Agent):
         It is computed as cost = cost of past path + estimated remaining cost.
 
         Arguments:
-            node: a tuple containing a state and the path taken to reach it
-        
+            node: a tuple containing:
+                - the past state
+                - the current state
+                - the path taken to get to the current state
+                - the total cost to get to the current state
+
         Returns:
-            The estimated cost
+            The estimated cost to win the game through this node.
         """
 
         # Computation of the current path cost
-        pastCost = 0
-        for i in node[1]:
-            if i != Directions.STOP:
-                pastCost += 1
-        
+        pastCost = node[3]
+
         # Estimation of the remaining cost
         # It's the maximum of all manhattan distances to each points
-        estimatedCost = 0
-        if not node[0].isWin():
-            pacman = node[0].getPacmanPosition()
-            for i in range(len(node[0].getFood().data)):
-                for j in range(len(node[0].getFood().data[0])):
-                    if node[0].getFood().data[i][j]:
-                        estimatedCost += manhattanDistance(pacman, (i, j))
-
-            if len(node[0].getCapsules()) == 0:
-                estimatedCost += 10**10
+        estimatedCost = self.heuristic(node)
 
         return pastCost + estimatedCost
 
+    def pastCost(self, past, current, cost, action):
+        """Given the past state, the cost it took to get to it, the current
+        state, and the action made to go from the past state to the current
+        one, computes the cost taken to get to the current state.
+
+        Arguments:
+            past: the state before the one that the computation is for.
+            current: the state for which the cost is being computed.
+            cost: the cost it took to get to the past state.
+            action: the last action taken.
+
+        Returns:
+            The total cost to get from the start to the current state.
+        """
+        newCost = 0
+        if action != Directions.STOP:
+            newCost += 1
+        if len(past.getCapsules()) != len(current.getCapsules()):
+            newCost += 5
+        if past.getNumFood() != current.getNumFood():
+            newCost -= 10
+
+        return cost + newCost
+
+    def heuristic(self, state):
+        """Given a state, returns the estimated cost to win through this state.
+        Computes the mean manhattan distance to the food.
+
+        Arguments:
+            state: a state of the environment
+
+        Returns:
+            The estimated cost
+        """
+        estimatedCost = []
+
+        if not state.isWin():
+            pacman = state.getPacmanPosition()
+
+            for i in range(len(state.getFood().data)):
+                for j in range(len(state.getFood().data[0])):
+                    if state.getFood().data[i][j]:
+                        estimatedCost.append(manhattanDistance(pacman, (i, j)))
+
+            return np.mean(estimatedCost)
+
+        else:
+            return 0
