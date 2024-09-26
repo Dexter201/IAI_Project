@@ -13,7 +13,7 @@ def key(state):
     """
 
     return (
-        state.getPacmanPosition() + (),
+        state.getPacmanPosition(), 
     )
 
 

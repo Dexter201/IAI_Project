@@ -1,5 +1,5 @@
 from pacman_module.game import Agent, Directions
-from pacman_module.util import Stack
+from pacman_module.util import Queue
 from dfs import key
     """Returns a key that uniquely identifies a Pacman game state.
 
@@ -31,7 +31,7 @@ class PacmanAgent(Agent):
         if self.moves is None:
             self.moves = self.bfs(state)
             
-        if self.moves is not None
+        if self.moves is not None:
             return self.moves.pop(0)
         else:
             return Directions.STOP
@@ -47,4 +47,28 @@ class PacmanAgent(Agent):
             A list of legal moves.
         """
         
-        
+        path = []
+        fringe = Queue() 
+        fringe.push((state, path))
+        closed = set()
+
+        while True:
+            if fringe.isEmpty():
+                return []
+
+            current, path = fringe.pop()
+
+            if current.isWin():
+                return path
+
+            current_key = key(current)
+
+            if current_key in closed:
+                continue
+            else:
+                closed.add(current_key)
+
+            for successor, action in current.generatePacmanSuccessors():
+                fringe.push((successor, path + [action]))
+
+        return path
