@@ -13,8 +13,7 @@ def key(state):
     """
 
     return (
-        state.getPacmanPosition(),
-        # ...
+        state.getPacmanPosition() + (),
     )
 
 
@@ -80,3 +79,4 @@ class PacmanAgent(Agent):
                 fringe.push((successor, path + [action]))
 
         return path
+
