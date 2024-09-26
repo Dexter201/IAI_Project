@@ -117,7 +117,7 @@ class PacmanAgent(Agent):
 
         # Estimation of the remaining cost
         # It's the maximum of all manhattan distances to each points
-        estimatedCost = self.heuristic(node)
+        estimatedCost = self.heuristic(node[1])
 
         return pastCost + estimatedCost
 
