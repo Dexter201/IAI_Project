@@ -44,22 +44,22 @@ class PacmanAgent(Agent):
         else:
             return Directions.STOP
 
-    def bfs(self,state):
-        
+    def bfs(self, state):
+
         path = []
         fringe = Queue()
         fringe.push((state, path))
         closed = set()
 
-        while True :
+        while True:
             if fringe.isEmpty():
                 return []
-            
+
             current, path = fringe.pop()
 
             if current.isWin():
                 return path
-            
+
             current_key = key(current)
 
             if current_key in closed:
@@ -68,8 +68,7 @@ class PacmanAgent(Agent):
                 closed.add(current_key)
 
             for successor, action in current.generatePacmanSuccessors():
-                if len(current.getCapsules()) - len(successor.getCapsules()) != 0:
-                    continue
                 fringe.push((successor, path + [action]))
-        
+
         return path
+    
