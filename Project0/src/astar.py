@@ -14,12 +14,7 @@ def key(state):
         A hashable key tuple.
     """
 
-    return (
-        state.getPacmanPosition(),
-        state.getFood(),
-        state.getNumFood(),
-        tuple(state.getCapsules()),
-    )
+    return (state.getPacmanPosition(), state.getFood())
 
 
 class PacmanAgent(Agent):
@@ -141,7 +136,7 @@ class PacmanAgent(Agent):
         if len(past.getCapsules()) != len(current.getCapsules()):
             newCost += 5
         if past.getNumFood() != current.getNumFood():
-            newCost -= 10
+            newCost -= 0
 
         return cost + newCost
 
@@ -155,17 +150,22 @@ class PacmanAgent(Agent):
         Returns:
             The estimated cost
         """
-        estimatedCost = []
+        estimatedCost = 0
 
-        if not state.isWin():
-            pacman = state.getPacmanPosition()
-
-            for i in range(len(state.getFood().data)):
-                for j in range(len(state.getFood().data[0])):
-                    if state.getFood().data[i][j]:
-                        estimatedCost.append(manhattanDistance(pacman, (i, j)))
-
-            return np.mean(estimatedCost)
-
-        else:
+        if state.isWin():
             return 0
+
+        distances = []
+        pacman = state.getPacmanPosition()
+        for i in range(len(state.getFood().data)):
+            for j in range(len(state.getFood().data[0])):
+                if state.getFood().data[i][j]:
+                    dist = manhattanDistance(pacman, (i, j))
+                    distances.append(dist)
+                    if dist > estimatedCost:
+                        estimatedCost = dist
+
+        std = np.std(dist)
+        estimatedCost += std
+
+        return estimatedCost
