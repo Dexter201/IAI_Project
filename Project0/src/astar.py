@@ -165,7 +165,4 @@ class PacmanAgent(Agent):
                     if dist > estimatedCost:
                         estimatedCost = dist
 
-        std = np.std(dist)
-        estimatedCost += std
-
         return estimatedCost
