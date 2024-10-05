@@ -15,6 +15,8 @@ def key(state):
     return (
         state.getPacmanPosition(),
         state.getFood(),
+        state.getNumFood(),
+        tuple(state.getCapsules()), 
     )
 
 
@@ -71,4 +73,3 @@ class PacmanAgent(Agent):
                 fringe.push((successor, path + [action]))
 
         return path
-    
