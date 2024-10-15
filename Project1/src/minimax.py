@@ -18,10 +18,13 @@ class PacmanAgent(Agent):
         Returns:
             A legal move as defined in `game.Directions`.
         """
-
-        self.move = minimaxSearch(state)[1]
-
-        return self.move
+        if self.move is None:
+            self.move = minimaxSearch(state)[1]
+        
+        if self.move is not None:
+            return self.move
+        else:
+            return Directions.STOP
 
 def minimaxSearch(state):
     """Given a Pacman game state, returns a list [Score, Move] if pacman use the path indicated by minimax's algo.
