@@ -1,4 +1,4 @@
-from pacman_module.game import Agent,Directions
+from pacman_module.game import Agent
 import numpy as np
 
 def key(state):
@@ -62,12 +62,12 @@ def minimaxSearch(s):
     """
 
     #we know that it's Pacman which plays first
-
+<<<<<<< HEAD
     return maxSearch(s,alpha=np.NINF, beta=np.PINF)
 
-def maxSearch(state, alpha=0, beta=0):
+def maxSearch(s, alpha=0, beta=0):
     PacmanSuccessors = s.generatePacmanSuccessors()
-
+=======
 
     closed = set()
     values = dict()
@@ -80,7 +80,7 @@ def maxSearch(state, closed, values):
         return values[current_key]
 
     PacmanSuccessors = state.generatePacmanSuccessors()
-
+>>>>>>> 39473e906f7c7ecafdcbf28e51b2e591522ddb41
     NextScores       = np.zeros(shape=len(PacmanSuccessors))
     NextActions      = []
     Score = np.NINF
@@ -91,7 +91,7 @@ def maxSearch(state, closed, values):
         if(NextState.isWin() or NextState.isLose()):                            # = terminal_test(s)
             NextScores[index]  = NextState.getScore()                           # = utility(s)
         else:
-
+<<<<<<< HEAD
             NextScores[index]  = np.max(minSearch(NextState, alpha, beta)[0])    # = max(MINIMAX(result(s, a) = NextState))
         Score = NextScores[index]
         NextActions.extend([NextAction])
@@ -100,10 +100,10 @@ def maxSearch(state, closed, values):
             return NextScores[indexMaxScore], NextActions[indexMaxScore]
         else:
             alpha = max(Score, alpha)
-
+=======
             NextScores[index]  = np.max(minSearch(NextState, closed, values)[0])    # = max(MINIMAX(result(s, a) = NextState))
             NextActions.append(NextAction)
-
+>>>>>>> 39473e906f7c7ecafdcbf28e51b2e591522ddb41
         index += 1
     
     indexMaxScore = np.where(NextScores==np.max(NextScores))[0][0]
@@ -113,17 +113,17 @@ def maxSearch(state, closed, values):
 
     return NextScores[indexMaxScore], NextActions[indexMaxScore]
             
-
+<<<<<<< HEAD
 def minSearch(s, alpha=0, beta=0):
     GhostSuccessors = s.generateGhostSuccessors(1)
-
+=======
 def minSearch(state, closed, values):
     current_key = key(state)
     if current_key in closed:
         return values[current_key]
 
     GhostSuccessors = state.generateGhostSuccessors(1)
-
+>>>>>>> 39473e906f7c7ecafdcbf28e51b2e591522ddb41
     NextScores       = np.zeros(shape=len(GhostSuccessors))
     NextActions      = []
     index = 0
@@ -133,6 +133,7 @@ def minSearch(state, closed, values):
         if(NextState.isWin() or NextState.isLose()):                            # = terminal_test(s)
             NextScores[index] = NextState.getScore()                            # = utility(s)
         else:
+<<<<<<< HEAD
             NextScores[index] = np.min(maxSearch(NextState, alpha, beta)[0])     # = min(MINIMAX(result(s, a) = NextState))
         Score = NextScores[index]
         NextActions.extend([NextAction])
@@ -141,10 +142,10 @@ def minSearch(state, closed, values):
             return NextScores[indexMaxScore], NextActions[indexMaxScore]
         else:
             beta = min(Score, beta)
-
+=======
             NextScores[index] = np.min(maxSearch(NextState, closed, values)[0])     # = min(MINIMAX(result(s, a) = NextState))
             NextActions.append(NextAction)
-
+>>>>>>> 39473e906f7c7ecafdcbf28e51b2e591522ddb41
         index += 1
 
     indexMinScore = np.where(NextScores==np.min(NextScores))[0][0]
